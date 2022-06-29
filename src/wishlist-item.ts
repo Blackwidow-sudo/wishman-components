@@ -2,17 +2,20 @@ import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 /**
- * @slot Displays the slotted element as the wish
+ * @slot Displays the slotted element as the wish (Only one HTMLElement)
  */
 @customElement("wishlist-item")
 export default class WishlistItem extends LitElement {
+    slotted: HTMLElement | undefined
+
     @property({ type: String })
-    wish = "";
+    wish = ""
 
     constructor() {
         super();
 
         this.setAttribute("role", "listitem");
+        this.slotted = undefined
     }
 
     static styles = css`
@@ -60,7 +63,7 @@ export default class WishlistItem extends LitElement {
                 <slot @slotchange=${this._handleSlotting}></slot>
             </div>
             <div class="ctrl-btns">
-                <button id="btn-edit" class="btn" @click=${this._handleEdit}>
+                <button id="btn-edit" class="btn" @click=${this._handleEdit} title="Edit">
                     Edit
                 </button>
                 <button
@@ -75,19 +78,38 @@ export default class WishlistItem extends LitElement {
     }
 
     private _handleSlotting(e: Event) {
-        const slottedNodes = (e.target as HTMLSlotElement).assignedNodes();
+        const slottedElements = (e.target as HTMLSlotElement).assignedElements();
 
-        if (slottedNodes.length > 0) {
-            slottedNodes.forEach((node) => {
-                if (node instanceof Text) {
-                    this.wish = node.textContent!;
-                    console.log(this.wish);
-                }
-            });
+        if (slottedElements.length > 1) {
+            console.warn("<wishlist-item />'s reactive property only considers the first slotted HTMLElement.")
+        }
+
+        if (!(slottedElements[0] instanceof HTMLElement)) {
+            console.warn("<wishlist-item /> will only work if the slotted content is an HTMLElement")
+            return;
+        }
+
+        const slottedElem = slottedElements[0]
+
+        this.wish = slottedElem.textContent ? slottedElem.textContent : ""
+        this.slotted = slottedElements[0];
+    }
+
+    private _handleEdit(e: Event) {
+        const btn = e.target as HTMLButtonElement
+
+        if (btn.title === "Edit") {
+            this.slotted!.contentEditable = "true"
+            btn.textContent = "Save"
+            btn.title = "Save"
+        } else {
+            this.slotted!.contentEditable = "false"
+            btn.textContent = "Edit"
+            btn.title = "Edit"
         }
     }
 
-    private _handleEdit(e: Event) {}
-
-    private _handleRemove(e: Event) {}
+    private _handleRemove() {
+        this.remove()
+    }
 }

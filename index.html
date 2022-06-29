@@ -5,14 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + Lit App</title>
-    <!-- <script src="/src/my-element.ts" type="module"></script> -->
-    <script type="module" src="/src/components/WishlistItem.ts"></script>
+    <script type="module" src="/src/wishlist-item.ts"></script>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <!-- <my-element>
-      <p>This is child content</p>
-    </my-element> -->
     <header>
       <h1>Preview for custom Elements for Wishman</h1>
     </header>
@@ -20,11 +16,20 @@
       <div>
         <h3>Wishlist</h3>
         <ul>
-          <wishlist-item><span>Element</span>My first wish</wishlist-item>
+          <wishlist-item>My first wish</wishlist-item>
           <wishlist-item>Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci, corrupti. Temporibus id ipsum atque possimus unde, voluptatibus quod itaque non, recusandae quis eius, accusamus impedit magnam rerum ducimus repellat. Minus, voluptate pariatur? Delectus iusto fugiat, possimus quaerat rem atque magnam!</wishlist-item>
           <wishlist-item>My third wish</wishlist-item>
         </ul>
       </div>
     </main>
+    <script>
+      const wlItems = document.querySelectorAll("wishlist-item")
+
+      wlItems.forEach(item => {
+        item._removeHandler = () => {
+          console.log("It works")
+        }
+      })
+    </script>
   </body>
 </html>
